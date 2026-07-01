@@ -10,7 +10,7 @@ public sealed class AuthFlowTests
     [Fact]
     public async Task Signup_verify_then_login_succeeds_and_login_is_blocked_until_verified()
     {
-        await using var factory = new AuthTestFactory();
+        await using var factory = new ApiTestFactory();
         var client = factory.CreateClient();
         var credentials = new Credentials("user@example.com", "password123");
 
@@ -39,7 +39,7 @@ public sealed class AuthFlowTests
     [Fact]
     public async Task Me_without_authentication_returns_401()
     {
-        await using var factory = new AuthTestFactory();
+        await using var factory = new ApiTestFactory();
         var client = factory.CreateClient();
 
         var response = await client.GetAsync("/auth/me");
@@ -50,7 +50,7 @@ public sealed class AuthFlowTests
     [Fact]
     public async Task Duplicate_signup_returns_409()
     {
-        await using var factory = new AuthTestFactory();
+        await using var factory = new ApiTestFactory();
         var client = factory.CreateClient();
         var credentials = new Credentials("dup@example.com", "password123");
 

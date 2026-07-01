@@ -4,6 +4,7 @@ import { SignupPage } from '../features/auth/SignupPage';
 import { VerifyEmailPage } from '../features/auth/VerifyEmailPage';
 import { ResendPage } from '../features/auth/ResendPage';
 import { HomePage } from '../features/home/HomePage';
+import { TeamsPage } from '../features/teams/TeamsPage';
 import { RequireAuth } from './RequireAuth';
 
 export function AppRoutes() {
@@ -18,6 +19,14 @@ export function AppRoutes() {
         element={
           <RequireAuth>
             <HomePage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/teams"
+        element={
+          <RequireAuth>
+            <TeamsPage />
           </RequireAuth>
         }
       />
