@@ -91,8 +91,12 @@ public sealed class TeamService
             return DeleteTeamOutcome.NotFound;
         }
 
-        // TODO (phases 3-4): return a Blocked (409) outcome when epics or tickets
-        // reference this team. No such entities exist yet, so deletion is unconditional.
+        // A team cannot be deleted while it still holds epics (tickets are added in phase 4).
+        if (await _dbContext.Epics.AnyAsync(e => e.TeamId == id, cancellationToken))
+        {
+            return DeleteTeamOutcome.Blocked;
+        }
+
         _dbContext.Teams.Remove(team);
         await _dbContext.SaveChangesAsync(cancellationToken);
 

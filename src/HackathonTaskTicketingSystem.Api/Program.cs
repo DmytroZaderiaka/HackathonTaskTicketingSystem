@@ -1,5 +1,6 @@
 using HackathonTaskTicketingSystem.Common.ErrorHandling;
 using HackathonTaskTicketingSystem.Features.Auth;
+using HackathonTaskTicketingSystem.Features.Epics;
 using HackathonTaskTicketingSystem.Features.Teams;
 using HackathonTaskTicketingSystem.Infrastructure;
 using HackathonTaskTicketingSystem.Infrastructure.Persistence;
@@ -26,6 +27,7 @@ public class Program
         builder.Services.AddInfrastructure(builder.Configuration);
         builder.Services.AddScoped<AuthService>();
         builder.Services.AddScoped<TeamService>();
+        builder.Services.AddScoped<EpicService>();
         builder.Services.AddHealthChecks();
 
         // Cookie-based authentication. Session identifiers never appear in URLs.

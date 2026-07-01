@@ -56,3 +56,28 @@ Content-Type: application/json
 
 ### Delete a team (replace the id)
 DELETE {{HackathonTaskTicketingSystem_HostAddress}}/teams/00000000-0000-0000-0000-000000000000
+
+### List epics (optionally filtered by team)
+GET {{HackathonTaskTicketingSystem_HostAddress}}/epics
+
+### Create an epic (replace teamId)
+POST {{HackathonTaskTicketingSystem_HostAddress}}/epics
+Content-Type: application/json
+
+{
+  "teamId": "00000000-0000-0000-0000-000000000000",
+  "title": "Checkout revamp",
+  "description": "Optional description"
+}
+
+### Update an epic (title/description only; team is immutable)
+PUT {{HackathonTaskTicketingSystem_HostAddress}}/epics/00000000-0000-0000-0000-000000000000
+Content-Type: application/json
+
+{
+  "title": "Checkout revamp v2",
+  "description": null
+}
+
+### Delete an epic (replace the id)
+DELETE {{HackathonTaskTicketingSystem_HostAddress}}/epics/00000000-0000-0000-0000-000000000000

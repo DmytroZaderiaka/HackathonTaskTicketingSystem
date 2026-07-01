@@ -253,3 +253,15 @@ main
 - `dotnet test` — **8/8 pass** (3 auth + 5 teams), 0 warnings; `npm run build` — чисто. Требуется финальная проверка Teams через UI + `docker compose up --build` на стороне разработчика.
 - UI-полировка (единые кнопки/стиль) — по-прежнему отложена на Фазу 7.
 - **Фикс по фидбеку:** гонка двойной отправки формы (создание/переименование) могла создать команду и одновременно показать 409 от второго запроса. Добавлена синхронная защита через `ref` (не полагаясь на асинхронный `disabled`). Дублей-строк в БД быть не может — уникальный индекс по `NormalizedName`.
+
+### Фаза 3a — Epics (backend) ✅ (ветка `feat/epics`)
+
+Сделано:
+- Сущность `Epic` (`IAuditableEntity`): `TeamId` (immutable), `Title` (непустой), `Description?`; конфигурация с FK на `Team` (`DeleteBehavior.Restrict`) + индекс по `TeamId`. Миграция `AddEpics`.
+- `EpicService` + `EpicsController`: `GET /epics?teamId=`, `GET /epics/{id}`, `POST /epics`, `PUT /epics/{id}` (без смены team), `DELETE /epics/{id}`. Валидация: пустой title → 400, несуществующий team → 400, не найдено → 404.
+- **Активирован delete-guard команды:** `TeamService.DeleteAsync` → `Blocked` (409), если у команды есть эпики; контроллер отдаёт 409 с ProblemDetails.
+- `.http` дополнен примерами Epics.
+
+Заметки:
+- Delete epic → 409 при наличии тикетов — `TODO`, включим в Фазе 4.
+- `dotnet build` — 0 warnings; тесты 8/8 зелёные (delete команды без эпиков не сломан). Тесты Epics + «team с эпиком → 409» — в Фазе 3b. Требуется проверка `docker compose up --build` + ручной прогон Epics API на стороне разработчика.

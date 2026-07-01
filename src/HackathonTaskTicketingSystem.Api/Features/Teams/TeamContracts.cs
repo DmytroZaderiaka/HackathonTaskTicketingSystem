@@ -27,5 +27,5 @@ public enum DeleteTeamOutcome
 {
     Success,
     NotFound,
-    // Blocked (409) is added in later phases once epics/tickets can reference a team.
+    Blocked, // 409: the team still holds epics (and, from phase 4, tickets).
 }
