@@ -1,7 +1,10 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using HackathonTaskTicketingSystem.Common.ErrorHandling;
 using HackathonTaskTicketingSystem.Features.Auth;
 using HackathonTaskTicketingSystem.Features.Epics;
 using HackathonTaskTicketingSystem.Features.Teams;
+using HackathonTaskTicketingSystem.Features.Tickets;
 using HackathonTaskTicketingSystem.Infrastructure;
 using HackathonTaskTicketingSystem.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -17,7 +20,12 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // --- Services ---
-        builder.Services.AddControllers();
+        builder.Services
+            .AddControllers()
+            .AddJsonOptions(options =>
+                // Serialize enums as canonical snake_case values (e.g. ready_for_implementation).
+                options.JsonSerializerOptions.Converters.Add(
+                    new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower)));
         builder.Services.AddOpenApi();
 
         // RFC 7807 problem details for all error responses.
@@ -28,6 +36,7 @@ public class Program
         builder.Services.AddScoped<AuthService>();
         builder.Services.AddScoped<TeamService>();
         builder.Services.AddScoped<EpicService>();
+        builder.Services.AddScoped<TicketService>();
         builder.Services.AddHealthChecks();
 
         // Cookie-based authentication. Session identifiers never appear in URLs.

@@ -37,5 +37,5 @@ public enum DeleteEpicOutcome
 {
     Success,
     NotFound,
-    // Blocked (409) is added in phase 4 once tickets can reference an epic.
+    Blocked, // 409: tickets still reference this epic.
 }

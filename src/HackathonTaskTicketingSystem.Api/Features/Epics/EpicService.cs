@@ -91,7 +91,11 @@ public sealed class EpicService
             return DeleteEpicOutcome.NotFound;
         }
 
-        // TODO (phase 4): return a Blocked (409) outcome when tickets reference this epic.
+        if (await _dbContext.Tickets.AnyAsync(t => t.EpicId == id, cancellationToken))
+        {
+            return DeleteEpicOutcome.Blocked;
+        }
+
         _dbContext.Epics.Remove(epic);
         await _dbContext.SaveChangesAsync(cancellationToken);
 

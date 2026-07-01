@@ -91,8 +91,11 @@ public sealed class TeamService
             return DeleteTeamOutcome.NotFound;
         }
 
-        // A team cannot be deleted while it still holds epics (tickets are added in phase 4).
-        if (await _dbContext.Epics.AnyAsync(e => e.TeamId == id, cancellationToken))
+        // A team cannot be deleted while it still holds epics or tickets.
+        var hasDependents =
+            await _dbContext.Epics.AnyAsync(e => e.TeamId == id, cancellationToken)
+            || await _dbContext.Tickets.AnyAsync(t => t.TeamId == id, cancellationToken);
+        if (hasDependents)
         {
             return DeleteTeamOutcome.Blocked;
         }

@@ -81,3 +81,35 @@ Content-Type: application/json
 
 ### Delete an epic (replace the id)
 DELETE {{HackathonTaskTicketingSystem_HostAddress}}/epics/00000000-0000-0000-0000-000000000000
+
+### List tickets for a team (optional filters: type, epicId, search)
+GET {{HackathonTaskTicketingSystem_HostAddress}}/tickets?teamId=00000000-0000-0000-0000-000000000000
+
+### Create a ticket (state optional, defaults to "new"; epic must be of the same team)
+POST {{HackathonTaskTicketingSystem_HostAddress}}/tickets
+Content-Type: application/json
+
+{
+  "teamId": "00000000-0000-0000-0000-000000000000",
+  "epicId": null,
+  "type": "bug",
+  "state": "new",
+  "title": "Login button misaligned",
+  "body": "On mobile the login button overlaps the footer."
+}
+
+### Update a ticket (type, team, epic, title, body, state)
+PUT {{HackathonTaskTicketingSystem_HostAddress}}/tickets/00000000-0000-0000-0000-000000000000
+Content-Type: application/json
+
+{
+  "teamId": "00000000-0000-0000-0000-000000000000",
+  "epicId": null,
+  "type": "fix",
+  "state": "in_progress",
+  "title": "Login button misaligned",
+  "body": "Updated description."
+}
+
+### Delete a ticket (replace the id)
+DELETE {{HackathonTaskTicketingSystem_HostAddress}}/tickets/00000000-0000-0000-0000-000000000000

@@ -21,6 +21,8 @@ public class AppDbContext : DbContext
 
     public DbSet<Epic> Epics => Set<Epic>();
 
+    public DbSet<Ticket> Tickets => Set<Ticket>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

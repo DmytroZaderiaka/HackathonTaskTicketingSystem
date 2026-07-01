@@ -275,3 +275,17 @@ main
 Заметки:
 - `dotnet test` — **14/14 pass** (3 auth + 5 teams + 6 epics), 0 warnings; `npm run build` — чисто. Требуется финальная проверка Epics через UI + `docker compose up --build` на стороне разработчика.
 - UI-полировка — по-прежнему отложена на Фазу 7.
+
+### Фаза 4a — Tickets (backend) ✅ (ветка `feat/tickets`)
+
+Сделано:
+- Enum'ы `TicketType`/`TicketState`; глобальный `JsonStringEnumConverter(SnakeCaseLower)` → API использует канонические snake_case значения; невалидный enum → 400. В БД хранятся строкой.
+- Сущность `Ticket` (`IAuditableEntity`): `TeamId`, `EpicId?`, `Type`, `State`, `Title`, `Body`, `CreatedById`; конфигурация (FK `Restrict`, индекс `(TeamId, ModifiedAt)`). Миграция `AddTickets`.
+- `TicketService` + `TicketsController`: `GET /tickets?teamId=&type=&epicId=&search=` (сорт. `ModifiedAt desc`, поиск по title CI), `GET /tickets/{id}`, `POST` (state опц., дефолт `new`), `PUT` (type/team/epic/title/body/state), `DELETE`.
+- Правила: title/body непустые → 400; несуществующий team → 400; **epic только из той же команды** (и при смене team) → 400; `created_by` из `ICurrentUser`.
+- **Активированы оставшиеся delete-guard'ы:** epic с тикетами → 409; team теперь блокируется и эпиками, и тикетами → 409.
+- `.http` дополнен примерами Tickets.
+
+Заметки:
+- Отдельный эндпоинт смены состояния (для drag-and-drop) и Kanban-доска — Фаза 6. Комментарии — Фаза 5.
+- `dotnet build` — 0 warnings; тесты 14/14 зелёные. Тесты Tickets — в Фазе 4b. Требуется проверка `docker compose up --build` + ручной прогон Tickets API на стороне разработчика.

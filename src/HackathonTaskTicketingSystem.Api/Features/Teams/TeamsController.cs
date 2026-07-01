@@ -64,7 +64,7 @@ public sealed class TeamsController : ControllerBase
             DeleteTeamOutcome.Blocked => Problem(
                 statusCode: StatusCodes.Status409Conflict,
                 title: "Team is not empty",
-                detail: "Delete or move its epics before deleting the team."),
+                detail: "Delete its epics and tickets before deleting the team."),
             _ => throw new InvalidOperationException($"Unhandled delete outcome: {outcome}"),
         };
     }
