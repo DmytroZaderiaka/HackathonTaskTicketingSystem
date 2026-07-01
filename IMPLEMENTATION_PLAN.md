@@ -215,3 +215,17 @@ main
 - Верификационная ссылка (пока нет фронта) ведёт на backend `GET /auth/verify-email`; в Фазе 1b перенаправится через фронт.
 - Тест-проект и business-flow тест перенесены в Фазу 1b (по решению разработчика).
 - `dotnet build` (solution) — 0 warnings. Требуется проверка `docker compose up --build` + ручной прогон auth-флоу через MailPit на стороне разработчика.
+
+### Фаза 1b — Auth (frontend) + тесты ✅ (ветка `feat/auth-ui`)
+
+Сделано:
+- Frontend: `react-router-dom`; API-клиент (`api/client.ts` с `credentials:'include'` + разбор ProblemDetails, `api/auth.ts`); `AuthContext` (сессия через `/auth/me`, login/logout); `RequireAuth`-guard; маршруты (`AppRoutes`).
+- Экраны: `LoginPage` (ошибки 401/403 + ссылка на resend при 403), `SignupPage` («проверьте почту»), `VerifyEmailPage` (берёт token из query, дёргает API, результат + переход на login), `ResendPage`; защищённая заглушка `HomePage` (email + logout).
+- Backend-правки: верификационная ссылка теперь ведёт на фронт `{App:BaseUrl}/verify-email?token=…` (`App__BaseUrl=http://localhost:8080` в compose, dev — `5173`); флаг `RunMigrationsOnStartup` (default true) для тестов.
+- Тесты: проект `tests/HackathonTaskTicketingSystem.Tests` в `.slnx`; `WebApplicationFactory<Program>` на SQLite in-memory (`EnsureCreated`) + `FakeEmailSender`. 3 теста: полный signup→verify→login флоу (+403 до верификации), `/me` без auth → 401, дубликат signup → 409. **Все зелёные, гоняются без Docker.**
+
+Заметки:
+- Тест поймал реальный баг: в .NET 10 DataAnnotations на record-параметрах должны быть на самих параметрах, а не `[property:]` — иначе signup падал 500. Исправлено.
+- `NU1903` от транзитивного `SQLitePCLRaw.lib.e_sqlite3` 2.1.11 закрыт пином `SQLitePCLRaw.bundle_e_sqlite3` 3.0.3 в тест-проекте.
+- `dotnet test` — 3/3 pass, 0 warnings; `npm run build` (frontend) — чисто. Auth-флоу через UI проверен разработчиком end-to-end — работает.
+- **Отложено на Фазу 7 (UI polish):** ссылки навигации (Back to login, Resend, Sign up и т.п.) → единые кнопки/`LinkButton`; консистентная стилизация всех экранов разом, с переиспользуемыми компонентами.

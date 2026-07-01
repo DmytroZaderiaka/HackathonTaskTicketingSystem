@@ -145,7 +145,7 @@ public sealed class AuthService
 
     private async Task SendVerificationEmailAsync(string email, string rawToken, CancellationToken cancellationToken)
     {
-        var link = $"{_appOptions.BaseUrl.TrimEnd('/')}/auth/verify-email?token={Uri.EscapeDataString(rawToken)}";
+        var link = $"{_appOptions.BaseUrl.TrimEnd('/')}/verify-email?token={Uri.EscapeDataString(rawToken)}";
         var body = $"""
             <p>Welcome to the Ticketing System.</p>
             <p>Please verify your email address by clicking the link below. It is valid for 24 hours:</p>
