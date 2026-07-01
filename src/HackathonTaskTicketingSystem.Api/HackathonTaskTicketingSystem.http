@@ -34,3 +34,25 @@ GET {{HackathonTaskTicketingSystem_HostAddress}}/auth/me
 
 ### Log out
 POST {{HackathonTaskTicketingSystem_HostAddress}}/auth/logout
+
+### List teams (requires auth cookie)
+GET {{HackathonTaskTicketingSystem_HostAddress}}/teams
+
+### Create a team
+POST {{HackathonTaskTicketingSystem_HostAddress}}/teams
+Content-Type: application/json
+
+{
+  "name": "Backend Team"
+}
+
+### Rename a team (replace the id)
+PUT {{HackathonTaskTicketingSystem_HostAddress}}/teams/00000000-0000-0000-0000-000000000000
+Content-Type: application/json
+
+{
+  "name": "Platform Team"
+}
+
+### Delete a team (replace the id)
+DELETE {{HackathonTaskTicketingSystem_HostAddress}}/teams/00000000-0000-0000-0000-000000000000

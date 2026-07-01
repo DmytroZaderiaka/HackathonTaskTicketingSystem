@@ -3,6 +3,7 @@ using HackathonTaskTicketingSystem.Common.Configuration;
 using HackathonTaskTicketingSystem.Infrastructure.Auth;
 using HackathonTaskTicketingSystem.Infrastructure.Email;
 using HackathonTaskTicketingSystem.Infrastructure.Persistence;
+using HackathonTaskTicketingSystem.Infrastructure.Persistence.Interceptors;
 using HackathonTaskTicketingSystem.Infrastructure.Time;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,8 +16,11 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<AppDbContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("Default")));
+        services.AddSingleton<AuditableEntitySaveChangesInterceptor>();
+        services.AddDbContext<AppDbContext>((serviceProvider, options) =>
+            options
+                .UseNpgsql(configuration.GetConnectionString("Default"))
+                .AddInterceptors(serviceProvider.GetRequiredService<AuditableEntitySaveChangesInterceptor>()));
 
         services.AddOptions<SmtpOptions>().Bind(configuration.GetSection(SmtpOptions.SectionName));
         services.AddOptions<AppOptions>().Bind(configuration.GetSection(AppOptions.SectionName));
