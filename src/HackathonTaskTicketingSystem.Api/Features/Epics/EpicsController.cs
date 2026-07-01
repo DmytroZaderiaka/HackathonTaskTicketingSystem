@@ -61,6 +61,10 @@ public sealed class EpicsController : ControllerBase
         {
             DeleteEpicOutcome.Success => NoContent(),
             DeleteEpicOutcome.NotFound => NotFoundProblem(),
+            DeleteEpicOutcome.Blocked => Problem(
+                statusCode: StatusCodes.Status409Conflict,
+                title: "Epic is referenced by tickets",
+                detail: "Reassign or delete its tickets before deleting the epic."),
             _ => throw new InvalidOperationException($"Unhandled delete outcome: {outcome}"),
         };
     }
