@@ -229,3 +229,16 @@ main
 - `NU1903` от транзитивного `SQLitePCLRaw.lib.e_sqlite3` 2.1.11 закрыт пином `SQLitePCLRaw.bundle_e_sqlite3` 3.0.3 в тест-проекте.
 - `dotnet test` — 3/3 pass, 0 warnings; `npm run build` (frontend) — чисто. Auth-флоу через UI проверен разработчиком end-to-end — работает.
 - **Отложено на Фазу 7 (UI polish):** ссылки навигации (Back to login, Resend, Sign up и т.п.) → единые кнопки/`LinkButton`; консистентная стилизация всех экранов разом, с переиспользуемыми компонентами.
+
+### Фаза 2a — Teams (backend) ✅ (ветка `feat/teams`)
+
+Сделано:
+- `IAuditableEntity` + `AuditableEntitySaveChangesInterceptor`: авто-проставление `CreatedAt`/`ModifiedAt` (оба при insert, только `ModifiedAt` при реальном изменении). Зарегистрирован в DbContext через DI. Централизует правило `modified_at`, переиспользуется для Epics/Tickets.
+- Сущность `Team` (`Name` + `NormalizedName` для case-insensitive уникальности с сохранением регистра) + конфигурация (уникальный индекс по `NormalizedName`). Миграция `AddTeams`.
+- `TeamService` + `TeamsController`: `GET /teams`, `GET /teams/{id}`, `POST /teams`, `PUT /teams/{id}`, `DELETE /teams/{id}`. Валидация: пустое имя → 400, дубликат → 409, не найдено → 404. Все под auth.
+- `.http` дополнен примерами Teams.
+
+Заметки:
+- **Delete-guard (409 при наличии epics/tickets) ещё не активен** — связанных сущностей нет; помечено `TODO` в `TeamService.DeleteAsync`, включим в Фазах 3/4.
+- Тесты Teams — в Фазе 2b (по правилу «тесты после полной реализации фазы»). При добавлении тестов не забыть подключить `AuditableEntitySaveChangesInterceptor` в тестовую SQLite-фабрику.
+- `dotnet build` — 0 warnings; существующие 3 auth-теста зелёные. Требуется проверка `docker compose up --build` + ручной прогон Teams API на стороне разработчика.
