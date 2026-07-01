@@ -299,3 +299,13 @@ main
 Заметки:
 - `dotnet test` — **23/23 pass** (3 auth + 5 teams + 6 epics + 9 tickets), 0 warnings; `npm run build` — чисто. Требуется финальная проверка Tickets через UI + `docker compose up --build` на стороне разработчика.
 - Kanban-доска (drag-and-drop, богатые фильтры) — Фаза 6. Комментарии — Фаза 5.
+
+### Фаза 5a — Comments (backend) ✅ (ветка `feat/comments`)
+
+Сделано:
+- Сущность `Comment` (`TicketId`, `AuthorId`, `Body`, `CreatedAt`; не `IAuditable`, `CreatedAt` из `IClock`); конфигурация: FK на `Ticket` **`Cascade`** (удаление тикета удаляет комментарии), FK на автора `Restrict`, индекс `(TicketId, CreatedAt)`. Миграция `AddComments`.
+- `CommentService` + `CommentsController`: `GET /tickets/{ticketId}/comments` (oldest-first), `POST /tickets/{ticketId}/comments`. Тикет не найден → 404; пустой body → 400; author из `ICurrentUser`.
+- **`modified_at` тикета не двигается** при добавлении комментария (тикет не изменяется, интерцептор его не трогает).
+
+Заметки:
+- `dotnet build` — 0 warnings; тесты 23/23 зелёные. Тесты Comments (вкл. «комментарий не двигает modified_at» и «удаление тикета удаляет комментарии») — в Фазе 5b. Требуется проверка `docker compose up --build` + ручной прогон на стороне разработчика.
