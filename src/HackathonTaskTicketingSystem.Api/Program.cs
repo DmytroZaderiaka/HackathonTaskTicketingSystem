@@ -75,7 +75,11 @@ public class Program
         app.MapControllers();
         app.MapHealthChecks("/health").AllowAnonymous(); // Public readiness/liveness endpoint.
 
-        await ApplyMigrationsAsync(app);
+        // Disabled in tests, which create the schema against an in-memory provider.
+        if (app.Configuration.GetValue("RunMigrationsOnStartup", true))
+        {
+            await ApplyMigrationsAsync(app);
+        }
 
         await app.RunAsync();
     }

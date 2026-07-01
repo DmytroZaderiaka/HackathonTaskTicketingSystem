@@ -35,6 +35,7 @@ services:
       ConnectionStrings__Default: "Host=db;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
       SMTP__Host: mailpit
       SMTP__Port: "1025"
+      App__BaseUrl: "http://localhost:8080"
     ports:
       - "5083:8080"
     depends_on:

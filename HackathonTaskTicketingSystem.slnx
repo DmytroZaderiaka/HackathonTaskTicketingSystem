@@ -2,4 +2,7 @@
   <Folder Name="/src/">
     <Project Path="src/HackathonTaskTicketingSystem.Api/HackathonTaskTicketingSystem.Api.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/HackathonTaskTicketingSystem.Tests/HackathonTaskTicketingSystem.Tests.csproj" />
+  </Folder>
 </Solution>

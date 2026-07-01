@@ -3,15 +3,15 @@ using System.ComponentModel.DataAnnotations;
 namespace HackathonTaskTicketingSystem.Features.Auth;
 
 public sealed record SignupRequest(
-    [property: Required, EmailAddress, MaxLength(256)] string Email,
-    [property: Required, MinLength(8)] string Password);
+    [Required, EmailAddress, MaxLength(256)] string Email,
+    [Required, MinLength(8)] string Password);
 
 public sealed record LoginRequest(
-    [property: Required, EmailAddress] string Email,
-    [property: Required] string Password);
+    [Required, EmailAddress] string Email,
+    [Required] string Password);
 
 public sealed record ResendVerificationRequest(
-    [property: Required, EmailAddress] string Email);
+    [Required, EmailAddress] string Email);
 
 public sealed record CurrentUserResponse(Guid Id, string Email);
 
