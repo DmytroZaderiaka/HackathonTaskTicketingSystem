@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using HackathonTaskTicketingSystem.Common.ErrorHandling;
 using HackathonTaskTicketingSystem.Features.Auth;
+using HackathonTaskTicketingSystem.Features.Comments;
 using HackathonTaskTicketingSystem.Features.Epics;
 using HackathonTaskTicketingSystem.Features.Teams;
 using HackathonTaskTicketingSystem.Features.Tickets;
@@ -37,6 +38,7 @@ public class Program
         builder.Services.AddScoped<TeamService>();
         builder.Services.AddScoped<EpicService>();
         builder.Services.AddScoped<TicketService>();
+        builder.Services.AddScoped<CommentService>();
         builder.Services.AddHealthChecks();
 
         // Cookie-based authentication. Session identifiers never appear in URLs.

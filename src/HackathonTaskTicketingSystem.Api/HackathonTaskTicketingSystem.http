@@ -113,3 +113,14 @@ Content-Type: application/json
 
 ### Delete a ticket (replace the id)
 DELETE {{HackathonTaskTicketingSystem_HostAddress}}/tickets/00000000-0000-0000-0000-000000000000
+
+### List comments for a ticket (oldest first)
+GET {{HackathonTaskTicketingSystem_HostAddress}}/tickets/00000000-0000-0000-0000-000000000000/comments
+
+### Add a comment to a ticket
+POST {{HackathonTaskTicketingSystem_HostAddress}}/tickets/00000000-0000-0000-0000-000000000000/comments
+Content-Type: application/json
+
+{
+  "body": "This looks good, moving to in progress."
+}
