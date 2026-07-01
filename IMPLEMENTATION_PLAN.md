@@ -265,3 +265,13 @@ main
 Заметки:
 - Delete epic → 409 при наличии тикетов — `TODO`, включим в Фазе 4.
 - `dotnet build` — 0 warnings; тесты 8/8 зелёные (delete команды без эпиков не сломан). Тесты Epics + «team с эпиком → 409» — в Фазе 3b. Требуется проверка `docker compose up --build` + ручной прогон Epics API на стороне разработчика.
+
+### Фаза 3b — Epics (frontend) + тесты ✅ (ветка `feat/epics-ui`)
+
+Сделано:
+- Frontend: `api/epics.ts`; экран `EpicsPage` — селектор команды, список эпиков команды, создание (title + description), inline-редактирование (title/description; команда неизменяема — не показывается в форме), удаление с подтверждением; защита от двойной отправки. Роут `/epics` под `RequireAuth` + ссылка с `HomePage`.
+- Тесты `EpicsApiTests` (6): создать → 201; пустой title → 400; несуществующий teamId → 400; изменить → 200; удалить → 204 затем 404; **удаление team с эпиком → 409**.
+
+Заметки:
+- `dotnet test` — **14/14 pass** (3 auth + 5 teams + 6 epics), 0 warnings; `npm run build` — чисто. Требуется финальная проверка Epics через UI + `docker compose up --build` на стороне разработчика.
+- UI-полировка — по-прежнему отложена на Фазу 7.
