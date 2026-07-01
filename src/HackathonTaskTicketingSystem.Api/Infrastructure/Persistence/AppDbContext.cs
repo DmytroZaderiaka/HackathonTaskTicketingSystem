@@ -19,6 +19,8 @@ public class AppDbContext : DbContext
 
     public DbSet<Team> Teams => Set<Team>();
 
+    public DbSet<Epic> Epics => Set<Epic>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
