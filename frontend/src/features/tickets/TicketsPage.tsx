@@ -4,6 +4,7 @@ import type { ApiError } from '../../api/client';
 import { type Epic, epicsApi } from '../../api/epics';
 import { type Team, teamsApi } from '../../api/teams';
 import { type Ticket, stateLabel, ticketsApi } from '../../api/tickets';
+import { TicketComments } from './TicketComments';
 import { TicketForm } from './TicketForm';
 
 type View = 'list' | 'create' | 'edit' | 'details';
@@ -213,6 +214,8 @@ function TicketDetails({
           </button>
         )}
       </div>
+
+      <TicketComments ticketId={ticket.id} />
     </>
   );
 }
