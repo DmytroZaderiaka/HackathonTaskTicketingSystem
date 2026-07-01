@@ -289,3 +289,13 @@ main
 Заметки:
 - Отдельный эндпоинт смены состояния (для drag-and-drop) и Kanban-доска — Фаза 6. Комментарии — Фаза 5.
 - `dotnet build` — 0 warnings; тесты 14/14 зелёные. Тесты Tickets — в Фазе 4b. Требуется проверка `docker compose up --build` + ручной прогон Tickets API на стороне разработчика.
+
+### Фаза 4b — Tickets (frontend) + тесты ✅ (ветка `feat/tickets-ui`)
+
+Сделано:
+- Frontend: `api/tickets.ts` (типы, `stateLabel`, фильтры); экран `TicketsPage` (селектор команды → список; состояния list/details/create/edit); `TicketForm` (type, state, team, epic-дропдаун команды, title, body) — **смена team очищает epic и перезагружает список эпиков**; детали тикета со всеми полями (`createdBy`, `createdAt`, `modifiedAt`); удаление с подтверждением; защита от двойной отправки. Роут `/tickets` + ссылка с `HomePage`.
+- Тесты `TicketsApiTests` (9): создать → 201; epic из чужой команды → 400; пустой title → 400; невалидный enum state → 400; изменить → 200; удалить → 204/404; фильтр по типу; epic-с-тикетом → 409; team-с-тикетом → 409.
+
+Заметки:
+- `dotnet test` — **23/23 pass** (3 auth + 5 teams + 6 epics + 9 tickets), 0 warnings; `npm run build` — чисто. Требуется финальная проверка Tickets через UI + `docker compose up --build` на стороне разработчика.
+- Kanban-доска (drag-and-drop, богатые фильтры) — Фаза 6. Комментарии — Фаза 5.

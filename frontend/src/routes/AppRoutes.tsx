@@ -6,6 +6,7 @@ import { ResendPage } from '../features/auth/ResendPage';
 import { HomePage } from '../features/home/HomePage';
 import { TeamsPage } from '../features/teams/TeamsPage';
 import { EpicsPage } from '../features/epics/EpicsPage';
+import { TicketsPage } from '../features/tickets/TicketsPage';
 import { RequireAuth } from './RequireAuth';
 
 export function AppRoutes() {
@@ -36,6 +37,14 @@ export function AppRoutes() {
         element={
           <RequireAuth>
             <EpicsPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/tickets"
+        element={
+          <RequireAuth>
+            <TicketsPage />
           </RequireAuth>
         }
       />
