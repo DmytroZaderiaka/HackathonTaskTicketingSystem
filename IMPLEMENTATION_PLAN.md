@@ -318,3 +318,12 @@ main
 
 Заметки:
 - `dotnet test` — **29/29 pass** (3 auth + 5 teams + 6 epics + 9 tickets + 6 comments), 0 warnings; `npm run build` — чисто. Требуется финальная проверка комментариев через UI + `docker compose up --build` на стороне разработчика.
+
+### Фаза 6a — Board backend (state endpoint) ✅ (ветка `feat/board`)
+
+Сделано:
+- `PATCH /tickets/{id}/state` (`ChangeTicketStateRequest`); `TicketService.ChangeStateAsync` — любое состояние → любое; не найден → 404; невалидный enum → 400; `modified_at` двигается только при реальной смене. Схема не менялась — миграции нет.
+- `.http` дополнен примером PATCH state.
+
+Заметки:
+- `dotnet build` — 0 warnings. Тесты state-эндпоинта + доска — в Фазе 6b. Доска грузит `GET /tickets?teamId=` и группирует/фильтрует на клиенте.
