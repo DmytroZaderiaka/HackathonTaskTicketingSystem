@@ -39,17 +39,6 @@ export const fieldStyle: CSSProperties = {
   borderRadius: 4,
 };
 
-export const buttonStyle: CSSProperties = {
-  width: '100%',
-  padding: '0.6rem',
-  border: 'none',
-  borderRadius: 4,
-  background: '#0052cc',
-  color: '#fff',
-  cursor: 'pointer',
-  fontSize: '1rem',
-};
-
 export const errorStyle: CSSProperties = {
   color: '#b00020',
   margin: '0 0 0.75rem',

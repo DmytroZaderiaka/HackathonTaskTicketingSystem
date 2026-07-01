@@ -1,5 +1,7 @@
 import { type CSSProperties, useRef, useState } from 'react';
 import { type Ticket, stateLabel } from '../../api/tickets';
+import { Button } from '../../components/Button';
+import { stateColors, typeColors } from '../../components/theme';
 import { TicketComments } from './TicketComments';
 
 interface TicketDetailsProps {
@@ -30,9 +32,17 @@ export function TicketDetails({ ticket, epicTitle, onEdit, onDelete, onBack }: T
       <h2>{ticket.title}</h2>
       <dl style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '0.25rem 1rem' }}>
         <dt style={dt}>Type</dt>
-        <dd style={dd}>{ticket.type}</dd>
+        <dd style={dd}>
+          <span style={{ ...badge, background: typeColors[ticket.type].bg, color: typeColors[ticket.type].fg }}>
+            {ticket.type}
+          </span>
+        </dd>
         <dt style={dt}>State</dt>
-        <dd style={dd}>{stateLabel(ticket.state)}</dd>
+        <dd style={dd}>
+          <span style={{ ...badge, background: stateColors[ticket.state].bg, color: stateColors[ticket.state].accent }}>
+            {stateLabel(ticket.state)}
+          </span>
+        </dd>
         <dt style={dt}>Epic</dt>
         <dd style={dd}>{epicTitle}</dd>
         <dt style={dt}>Created by</dt>
@@ -46,22 +56,20 @@ export function TicketDetails({ ticket, epicTitle, onEdit, onDelete, onBack }: T
       <p style={{ whiteSpace: 'pre-wrap' }}>{ticket.body}</p>
 
       <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
-        <button style={primaryButton} onClick={onEdit}>
-          Edit
-        </button>
+        <Button onClick={onEdit}>Edit</Button>
         {confirming ? (
           <>
-            <button style={dangerButton} onClick={confirmDelete}>
+            <Button variant="danger" onClick={confirmDelete}>
               Confirm delete
-            </button>
-            <button style={secondaryButton} onClick={() => setConfirming(false)}>
+            </Button>
+            <Button variant="secondary" onClick={() => setConfirming(false)}>
               Cancel
-            </button>
+            </Button>
           </>
         ) : (
-          <button style={secondaryButton} onClick={() => setConfirming(true)}>
+          <Button variant="secondary" onClick={() => setConfirming(true)}>
             Delete
-          </button>
+          </Button>
         )}
       </div>
 
@@ -70,27 +78,11 @@ export function TicketDetails({ ticket, epicTitle, onEdit, onDelete, onBack }: T
   );
 }
 
-const primaryButton: CSSProperties = {
-  padding: '0.5rem 1rem',
-  border: 'none',
-  borderRadius: 4,
-  background: '#0052cc',
-  color: '#fff',
-  cursor: 'pointer',
-};
-
-const secondaryButton: CSSProperties = {
-  padding: '0.5rem 1rem',
-  border: '1px solid #ccc',
-  borderRadius: 4,
-  background: '#fff',
-  cursor: 'pointer',
-};
-
-const dangerButton: CSSProperties = {
-  ...secondaryButton,
-  border: '1px solid #b00020',
-  color: '#b00020',
+const badge: CSSProperties = {
+  fontSize: '0.75rem',
+  padding: '0.1rem 0.5rem',
+  borderRadius: 999,
+  fontWeight: 600,
 };
 
 const linkButton: CSSProperties = {

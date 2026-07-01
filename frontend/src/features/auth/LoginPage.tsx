@@ -2,7 +2,8 @@ import { type FormEvent, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import type { ApiError } from '../../api/client';
 import { useAuth } from '../../auth/AuthContext';
-import { AuthLayout, buttonStyle, errorStyle, fieldStyle } from '../../components/AuthLayout';
+import { Button, LinkButton } from '../../components/Button';
+import { AuthLayout, errorStyle, fieldStyle } from '../../components/AuthLayout';
 
 export function LoginPage() {
   const { login } = useAuth();
@@ -56,13 +57,13 @@ export function LoginPage() {
             )}
           </p>
         )}
-        <button style={buttonStyle} type="submit" disabled={submitting}>
+        <Button type="submit" disabled={submitting} style={{ width: '100%' }}>
           {submitting ? 'Logging in…' : 'Log in'}
-        </button>
+        </Button>
       </form>
-      <p style={{ marginBottom: 0 }}>
-        No account? <Link to="/signup">Sign up</Link>
-      </p>
+      <LinkButton to="/signup" variant="secondary" style={{ width: '100%', textAlign: 'center', marginTop: '0.75rem' }}>
+        Create an account
+      </LinkButton>
     </AuthLayout>
   );
 }

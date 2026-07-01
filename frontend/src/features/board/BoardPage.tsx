@@ -8,7 +8,6 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-import { Link } from 'react-router-dom';
 import type { ApiError } from '../../api/client';
 import { type Epic, epicsApi } from '../../api/epics';
 import { type Team, teamsApi } from '../../api/teams';
@@ -21,6 +20,8 @@ import {
   stateLabel,
   ticketsApi,
 } from '../../api/tickets';
+import { Button } from '../../components/Button';
+import { stateColors, typeColors } from '../../components/theme';
 import { TicketDetails } from '../tickets/TicketDetails';
 import { TicketForm } from '../tickets/TicketForm';
 
@@ -129,13 +130,10 @@ export function BoardPage() {
   };
 
   return (
-    <div style={{ fontFamily: 'system-ui, sans-serif', padding: '1.5rem' }}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1 style={{ margin: 0 }}>Board</h1>
-        <Link to="/">← Back</Link>
-      </header>
+    <div style={{ padding: '1.5rem' }}>
+      <h1 style={{ margin: '0 0 1rem' }}>Board</h1>
 
-      <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center', margin: '1rem 0' }}>
+      <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center', marginBottom: '1rem' }}>
         <select style={controlStyle} value={teamId} onChange={(e) => setTeamId(e.target.value)}>
           <option value="">— Select a team —</option>
           {teams.map((team) => (
@@ -169,9 +167,7 @@ export function BoardPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
-            <button style={primaryButton} onClick={() => setOverlay({ kind: 'create' })}>
-              New ticket
-            </button>
+            <Button onClick={() => setOverlay({ kind: 'create' })}>New ticket</Button>
           </>
         )}
       </div>
@@ -180,8 +176,17 @@ export function BoardPage() {
       {!teamId && <p>Select a team to open its board.</p>}
 
       {teamId && (
-        <DndContext sensors={sensors} onDragEnd={onDragEnd}>
-          <div style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
+        <DndContext sensors={sensors} onDragEnd={onDragEnd} autoScroll={false}>
+          <div
+            style={{
+              display: 'flex',
+              gap: '0.75rem',
+              overflowX: 'auto',
+              paddingBottom: '0.5rem',
+              alignItems: 'stretch',
+              minHeight: 'calc(100vh - 190px)',
+            }}
+          >
             {TICKET_STATES.map((state) => (
               <Column key={state} state={state} count={columns.get(state)!.length}>
                 {columns.get(state)!.map((ticket) => (
@@ -223,19 +228,23 @@ export function BoardPage() {
 
 function Column({ state, count, children }: { state: TicketState; count: number; children: ReactNode }) {
   const { setNodeRef, isOver } = useDroppable({ id: state });
+  const palette = stateColors[state];
   return (
     <div
       ref={setNodeRef}
       style={{
         flex: '1 0 220px',
         minWidth: 220,
-        background: isOver ? '#e6efff' : '#f4f5f7',
-        borderRadius: 6,
+        background: palette.bg,
+        borderRadius: 8,
         padding: '0.5rem',
+        borderTop: `3px solid ${palette.accent}`,
+        outline: isOver ? `2px solid ${palette.accent}` : '2px solid transparent',
+        transition: 'outline-color 0.1s',
       }}
     >
-      <h3 style={{ fontSize: '0.85rem', margin: '0 0 0.5rem', color: '#444' }}>
-        {stateLabel(state)} <span style={{ color: '#999' }}>({count})</span>
+      <h3 style={{ fontSize: '0.85rem', margin: '0 0 0.5rem', color: palette.accent }}>
+        {stateLabel(state)} <span style={{ opacity: 0.7 }}>({count})</span>
       </h3>
       <div style={{ display: 'grid', gap: '0.5rem', minHeight: 40 }}>{children}</div>
     </div>
@@ -254,12 +263,13 @@ function TicketCard({ ticket, epicTitle, onOpen }: { ticket: Ticket; epicTitle: 
     opacity: isDragging ? 0.5 : 1,
     transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
   };
+  const typePalette = typeColors[ticket.type];
   return (
     <div ref={setNodeRef} style={style} {...listeners} {...attributes} onClick={onOpen}>
       <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{ticket.title}</div>
       <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.35rem', flexWrap: 'wrap' }}>
-        <span style={badge}>{ticket.type}</span>
-        {ticket.epicId && <span style={{ ...badge, background: '#eee' }}>{epicTitle}</span>}
+        <span style={{ ...badge, background: typePalette.bg, color: typePalette.fg }}>{ticket.type}</span>
+        {ticket.epicId && <span style={{ ...badge, background: '#eee', color: '#555' }}>{epicTitle}</span>}
       </div>
     </div>
   );
@@ -279,15 +289,6 @@ const controlStyle: CSSProperties = {
   padding: '0.4rem 0.5rem',
   border: '1px solid #ccc',
   borderRadius: 4,
-};
-
-const primaryButton: CSSProperties = {
-  padding: '0.45rem 1rem',
-  border: 'none',
-  borderRadius: 4,
-  background: '#0052cc',
-  color: '#fff',
-  cursor: 'pointer',
 };
 
 const badge: CSSProperties = {

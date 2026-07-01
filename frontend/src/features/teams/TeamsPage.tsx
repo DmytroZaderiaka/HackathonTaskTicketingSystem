@@ -1,7 +1,7 @@
 import { type CSSProperties, type FormEvent, useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 import type { ApiError } from '../../api/client';
 import { type Team, teamsApi } from '../../api/teams';
+import { Button } from '../../components/Button';
 
 export function TeamsPage() {
   const [teams, setTeams] = useState<Team[] | null>(null);
@@ -45,10 +45,7 @@ export function TeamsPage() {
 
   return (
     <main style={pageStyle}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1>Teams</h1>
-        <Link to="/">← Back</Link>
-      </header>
+      <h1>Teams</h1>
 
       <form onSubmit={create} style={{ display: 'flex', gap: '0.5rem', margin: '1rem 0' }}>
         <input
@@ -58,9 +55,9 @@ export function TeamsPage() {
           onChange={(e) => setNewName(e.target.value)}
           required
         />
-        <button style={primaryButton} type="submit" disabled={creating}>
+        <Button type="submit" disabled={creating}>
           {creating ? 'Adding…' : 'Add team'}
-        </button>
+        </Button>
       </form>
 
       {error && <p style={errorText}>{error}</p>}
@@ -121,11 +118,11 @@ function TeamRow({
       {editing ? (
         <>
           <input style={{ ...inputStyle, flex: 1 }} value={name} onChange={(e) => setName(e.target.value)} />
-          <button style={secondaryButton} onClick={save} disabled={busy}>
+          <Button variant="secondary" onClick={save} disabled={busy}>
             Save
-          </button>
-          <button
-            style={secondaryButton}
+          </Button>
+          <Button
+            variant="secondary"
             onClick={() => {
               setName(team.name);
               setEditing(false);
@@ -133,27 +130,27 @@ function TeamRow({
             disabled={busy}
           >
             Cancel
-          </button>
+          </Button>
         </>
       ) : confirmingDelete ? (
         <>
           <span style={{ flex: 1 }}>Delete “{team.name}”?</span>
-          <button style={dangerButton} onClick={remove} disabled={busy}>
+          <Button variant="danger" onClick={remove} disabled={busy}>
             Delete
-          </button>
-          <button style={secondaryButton} onClick={() => setConfirmingDelete(false)} disabled={busy}>
+          </Button>
+          <Button variant="secondary" onClick={() => setConfirmingDelete(false)} disabled={busy}>
             Cancel
-          </button>
+          </Button>
         </>
       ) : (
         <>
           <span style={{ flex: 1 }}>{team.name}</span>
-          <button style={secondaryButton} onClick={() => setEditing(true)}>
+          <Button variant="secondary" onClick={() => setEditing(true)}>
             Rename
-          </button>
-          <button style={secondaryButton} onClick={() => setConfirmingDelete(true)}>
+          </Button>
+          <Button variant="secondary" onClick={() => setConfirmingDelete(true)}>
             Delete
-          </button>
+          </Button>
         </>
       )}
     </li>
@@ -179,29 +176,6 @@ const rowStyle: CSSProperties = {
   alignItems: 'center',
   padding: '0.5rem 0',
   borderBottom: '1px solid #eee',
-};
-
-const primaryButton: CSSProperties = {
-  padding: '0.5rem 1rem',
-  border: 'none',
-  borderRadius: 4,
-  background: '#0052cc',
-  color: '#fff',
-  cursor: 'pointer',
-};
-
-const secondaryButton: CSSProperties = {
-  padding: '0.4rem 0.75rem',
-  border: '1px solid #ccc',
-  borderRadius: 4,
-  background: '#fff',
-  cursor: 'pointer',
-};
-
-const dangerButton: CSSProperties = {
-  ...secondaryButton,
-  border: '1px solid #b00020',
-  color: '#b00020',
 };
 
 const errorText: CSSProperties = {
