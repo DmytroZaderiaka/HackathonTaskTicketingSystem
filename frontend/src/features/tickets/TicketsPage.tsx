@@ -1,9 +1,10 @@
 import { type CSSProperties, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import type { ApiError } from '../../api/client';
 import { type Epic, epicsApi } from '../../api/epics';
 import { type Team, teamsApi } from '../../api/teams';
 import { type Ticket, stateLabel, ticketsApi } from '../../api/tickets';
+import { Button } from '../../components/Button';
+import { stateColors, typeColors } from '../../components/theme';
 import { TicketDetails } from './TicketDetails';
 import { TicketForm } from './TicketForm';
 
@@ -100,10 +101,7 @@ export function TicketsPage() {
 
   return (
     <main style={pageStyle}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1>Tickets</h1>
-        <Link to="/">← Back</Link>
-      </header>
+      <h1>Tickets</h1>
 
       <label style={{ display: 'block', margin: '1rem 0 0.5rem' }}>
         Team
@@ -122,9 +120,7 @@ export function TicketsPage() {
 
       {teamId && (
         <>
-          <button style={primaryButton} onClick={() => setView('create')}>
-            New ticket
-          </button>
+          <Button onClick={() => setView('create')}>New ticket</Button>
 
           {tickets === null && <p>Loading…</p>}
           {tickets !== null && tickets.length === 0 && <p>No tickets in this team yet.</p>}
@@ -135,8 +131,12 @@ export function TicketsPage() {
                   <button style={linkButton} onClick={() => openDetails(ticket.id)}>
                     {ticket.title}
                   </button>
-                  <span style={badge}>{ticket.type}</span>
-                  <span style={badge}>{stateLabel(ticket.state)}</span>
+                  <span style={{ ...badge, background: typeColors[ticket.type].bg, color: typeColors[ticket.type].fg }}>
+                    {ticket.type}
+                  </span>
+                  <span style={{ ...badge, background: stateColors[ticket.state].bg, color: stateColors[ticket.state].accent }}>
+                    {stateLabel(ticket.state)}
+                  </span>
                   <span style={{ color: '#777', fontSize: '0.85rem' }}>{epicTitle(ticket.epicId)}</span>
                 </li>
               ))}
@@ -177,15 +177,6 @@ const badge: CSSProperties = {
   borderRadius: 999,
   background: '#eef',
   color: '#334',
-};
-
-const primaryButton: CSSProperties = {
-  padding: '0.5rem 1rem',
-  border: 'none',
-  borderRadius: 4,
-  background: '#0052cc',
-  color: '#fff',
-  cursor: 'pointer',
 };
 
 const linkButton: CSSProperties = {

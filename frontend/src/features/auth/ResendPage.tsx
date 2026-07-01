@@ -1,8 +1,8 @@
 import { type FormEvent, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { authApi } from '../../api/auth';
 import type { ApiError } from '../../api/client';
-import { AuthLayout, buttonStyle, errorStyle, fieldStyle } from '../../components/AuthLayout';
+import { Button, LinkButton } from '../../components/Button';
+import { AuthLayout, errorStyle, fieldStyle } from '../../components/AuthLayout';
 
 export function ResendPage() {
   const [email, setEmail] = useState('');
@@ -28,9 +28,9 @@ export function ResendPage() {
     return (
       <AuthLayout title="Verification email sent">
         <p>If an unverified account exists for that email, a new verification link has been sent.</p>
-        <p style={{ marginBottom: 0 }}>
-          <Link to="/login">Back to login</Link>
-        </p>
+        <LinkButton to="/login" variant="primary" style={{ width: '100%', textAlign: 'center' }}>
+          Back to login
+        </LinkButton>
       </AuthLayout>
     );
   }
@@ -47,13 +47,13 @@ export function ResendPage() {
           required
         />
         {error && <p style={errorStyle}>{error.title}</p>}
-        <button style={buttonStyle} type="submit" disabled={submitting}>
+        <Button type="submit" disabled={submitting} style={{ width: '100%' }}>
           {submitting ? 'Sending…' : 'Resend email'}
-        </button>
+        </Button>
       </form>
-      <p style={{ marginBottom: 0 }}>
-        <Link to="/login">Back to login</Link>
-      </p>
+      <LinkButton to="/login" variant="secondary" style={{ width: '100%', textAlign: 'center', marginTop: '0.75rem' }}>
+        Back to login
+      </LinkButton>
     </AuthLayout>
   );
 }

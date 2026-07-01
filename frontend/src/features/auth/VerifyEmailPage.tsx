@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { authApi } from '../../api/auth';
+import { LinkButton } from '../../components/Button';
 import { AuthLayout } from '../../components/AuthLayout';
 
 type Status = 'verifying' | 'success' | 'error';
@@ -28,17 +29,17 @@ export function VerifyEmailPage() {
       {status === 'success' && (
         <>
           <p>Your email has been verified. You can now log in.</p>
-          <p style={{ marginBottom: 0 }}>
-            <Link to="/login">Go to login</Link>
-          </p>
+          <LinkButton to="/login" variant="primary" style={{ width: '100%', textAlign: 'center' }}>
+            Go to login
+          </LinkButton>
         </>
       )}
       {status === 'error' && (
         <>
           <p>This verification link is invalid or has expired.</p>
-          <p style={{ marginBottom: 0 }}>
-            <Link to="/resend">Request a new link</Link>
-          </p>
+          <LinkButton to="/resend" variant="primary" style={{ width: '100%', textAlign: 'center' }}>
+            Request a new link
+          </LinkButton>
         </>
       )}
     </AuthLayout>

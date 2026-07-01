@@ -12,6 +12,7 @@ import {
   stateLabel,
   ticketsApi,
 } from '../../api/tickets';
+import { Button } from '../../components/Button';
 
 interface TicketFormProps {
   teams: Team[];
@@ -143,12 +144,12 @@ export function TicketForm({ teams, ticket, defaultTeamId, onSaved, onCancel }: 
       {error && <p style={{ color: '#b00020', margin: 0 }}>{error}</p>}
 
       <div style={{ display: 'flex', gap: '0.5rem' }}>
-        <button style={primaryButton} type="submit" disabled={busy}>
+        <Button type="submit" disabled={busy}>
           {busy ? 'Saving…' : 'Save'}
-        </button>
-        <button style={secondaryButton} type="button" onClick={onCancel} disabled={busy}>
+        </Button>
+        <Button variant="secondary" type="button" onClick={onCancel} disabled={busy}>
           Cancel
-        </button>
+        </Button>
       </div>
     </form>
   );
@@ -167,21 +168,4 @@ const inputStyle: CSSProperties = {
   borderRadius: 4,
   boxSizing: 'border-box',
   width: '100%',
-};
-
-const primaryButton: CSSProperties = {
-  padding: '0.5rem 1rem',
-  border: 'none',
-  borderRadius: 4,
-  background: '#0052cc',
-  color: '#fff',
-  cursor: 'pointer',
-};
-
-const secondaryButton: CSSProperties = {
-  padding: '0.5rem 1rem',
-  border: '1px solid #ccc',
-  borderRadius: 4,
-  background: '#fff',
-  cursor: 'pointer',
 };

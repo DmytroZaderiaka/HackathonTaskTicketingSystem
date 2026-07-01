@@ -1,8 +1,8 @@
 import { type FormEvent, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { authApi } from '../../api/auth';
 import type { ApiError } from '../../api/client';
-import { AuthLayout, buttonStyle, errorStyle, fieldStyle } from '../../components/AuthLayout';
+import { Button, LinkButton } from '../../components/Button';
+import { AuthLayout, errorStyle, fieldStyle } from '../../components/AuthLayout';
 
 export function SignupPage() {
   const [email, setEmail] = useState('');
@@ -32,9 +32,14 @@ export function SignupPage() {
           We sent a verification link to <strong>{email}</strong>. Open it to activate your account,
           then log in.
         </p>
-        <p style={{ marginBottom: 0 }}>
-          <Link to="/login">Back to login</Link> · <Link to="/resend">Resend email</Link>
-        </p>
+        <div style={{ display: 'grid', gap: '0.5rem' }}>
+          <LinkButton to="/login" variant="primary" style={{ textAlign: 'center' }}>
+            Back to login
+          </LinkButton>
+          <LinkButton to="/resend" variant="secondary" style={{ textAlign: 'center' }}>
+            Resend email
+          </LinkButton>
+        </div>
       </AuthLayout>
     );
   }
@@ -60,13 +65,13 @@ export function SignupPage() {
           required
         />
         {error && <p style={errorStyle}>{error.title}</p>}
-        <button style={buttonStyle} type="submit" disabled={submitting}>
+        <Button type="submit" disabled={submitting} style={{ width: '100%' }}>
           {submitting ? 'Creating account…' : 'Sign up'}
-        </button>
+        </Button>
       </form>
-      <p style={{ marginBottom: 0 }}>
-        Already have an account? <Link to="/login">Log in</Link>
-      </p>
+      <LinkButton to="/login" variant="secondary" style={{ width: '100%', textAlign: 'center', marginTop: '0.75rem' }}>
+        Back to login
+      </LinkButton>
     </AuthLayout>
   );
 }

@@ -1,8 +1,8 @@
 import { type CSSProperties, type FormEvent, useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 import type { ApiError } from '../../api/client';
 import { type Epic, epicsApi } from '../../api/epics';
 import { type Team, teamsApi } from '../../api/teams';
+import { Button } from '../../components/Button';
 
 export function EpicsPage() {
   const [teams, setTeams] = useState<Team[] | null>(null);
@@ -57,10 +57,7 @@ export function EpicsPage() {
 
   return (
     <main style={pageStyle}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1>Epics</h1>
-        <Link to="/">← Back</Link>
-      </header>
+      <h1>Epics</h1>
 
       <label style={{ display: 'block', margin: '1rem 0 0.5rem' }}>
         Team
@@ -94,9 +91,9 @@ export function EpicsPage() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
-            <button style={primaryButton} type="submit" disabled={creating}>
+            <Button type="submit" disabled={creating} style={{ justifySelf: 'start' }}>
               {creating ? 'Adding…' : 'Add epic'}
-            </button>
+            </Button>
           </form>
 
           {epics === null && <p>Loading…</p>}
@@ -167,11 +164,11 @@ function EpicRow({
             onChange={(e) => setDescription(e.target.value)}
           />
           <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <button style={secondaryButton} onClick={save} disabled={busy}>
+            <Button variant="secondary" onClick={save} disabled={busy}>
               Save
-            </button>
-            <button
-              style={secondaryButton}
+            </Button>
+            <Button
+              variant="secondary"
               onClick={() => {
                 setTitle(epic.title);
                 setDescription(epic.description ?? '');
@@ -180,18 +177,18 @@ function EpicRow({
               disabled={busy}
             >
               Cancel
-            </button>
+            </Button>
           </div>
         </div>
       ) : confirmingDelete ? (
         <>
           <span style={{ flex: 1 }}>Delete “{epic.title}”?</span>
-          <button style={dangerButton} onClick={remove} disabled={busy}>
+          <Button variant="danger" onClick={remove} disabled={busy}>
             Delete
-          </button>
-          <button style={secondaryButton} onClick={() => setConfirmingDelete(false)} disabled={busy}>
+          </Button>
+          <Button variant="secondary" onClick={() => setConfirmingDelete(false)} disabled={busy}>
             Cancel
-          </button>
+          </Button>
         </>
       ) : (
         <>
@@ -199,12 +196,12 @@ function EpicRow({
             <strong>{epic.title}</strong>
             {epic.description && <div style={{ color: '#555', fontSize: '0.9rem' }}>{epic.description}</div>}
           </div>
-          <button style={secondaryButton} onClick={() => setEditing(true)}>
+          <Button variant="secondary" onClick={() => setEditing(true)}>
             Edit
-          </button>
-          <button style={secondaryButton} onClick={() => setConfirmingDelete(true)}>
+          </Button>
+          <Button variant="secondary" onClick={() => setConfirmingDelete(true)}>
             Delete
-          </button>
+          </Button>
         </>
       )}
     </li>
@@ -231,30 +228,6 @@ const rowStyle: CSSProperties = {
   alignItems: 'flex-start',
   padding: '0.5rem 0',
   borderBottom: '1px solid #eee',
-};
-
-const primaryButton: CSSProperties = {
-  padding: '0.5rem 1rem',
-  border: 'none',
-  borderRadius: 4,
-  background: '#0052cc',
-  color: '#fff',
-  cursor: 'pointer',
-  justifySelf: 'start',
-};
-
-const secondaryButton: CSSProperties = {
-  padding: '0.4rem 0.75rem',
-  border: '1px solid #ccc',
-  borderRadius: 4,
-  background: '#fff',
-  cursor: 'pointer',
-};
-
-const dangerButton: CSSProperties = {
-  ...secondaryButton,
-  border: '1px solid #b00020',
-  color: '#b00020',
 };
 
 const errorText: CSSProperties = {

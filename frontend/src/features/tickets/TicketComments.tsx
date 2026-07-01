@@ -1,6 +1,7 @@
 import { type CSSProperties, type FormEvent, useEffect, useRef, useState } from 'react';
 import type { ApiError } from '../../api/client';
 import { type Comment, commentsApi } from '../../api/comments';
+import { Button } from '../../components/Button';
 
 export function TicketComments({ ticketId }: { ticketId: string }) {
   const [comments, setComments] = useState<Comment[] | null>(null);
@@ -66,9 +67,9 @@ export function TicketComments({ ticketId }: { ticketId: string }) {
           required
         />
         {error && <p style={{ color: '#b00020', margin: 0 }}>{error}</p>}
-        <button style={primaryButton} type="submit" disabled={busy}>
+        <Button type="submit" disabled={busy} style={{ justifySelf: 'start' }}>
           {busy ? 'Posting…' : 'Add comment'}
-        </button>
+        </Button>
       </form>
     </section>
   );
@@ -88,12 +89,3 @@ const textareaStyle: CSSProperties = {
   boxSizing: 'border-box',
 };
 
-const primaryButton: CSSProperties = {
-  padding: '0.5rem 1rem',
-  border: 'none',
-  borderRadius: 4,
-  background: '#0052cc',
-  color: '#fff',
-  cursor: 'pointer',
-  justifySelf: 'start',
-};
