@@ -65,5 +65,6 @@ export const ticketsApi = {
   get: (id: string) => api.get<Ticket>(`/tickets/${id}`),
   create: (input: TicketInput) => api.post<Ticket>('/tickets', input),
   update: (id: string, input: TicketInput) => api.put<Ticket>(`/tickets/${id}`, input),
+  changeState: (id: string, state: TicketState) => api.patch<Ticket>(`/tickets/${id}/state`, { state }),
   remove: (id: string) => api.del<void>(`/tickets/${id}`),
 };

@@ -15,8 +15,8 @@ export function HomePage() {
         Signed in as <strong>{user?.email}</strong>.
       </p>
       <p>
-        Manage <Link to="/teams">Teams</Link>, <Link to="/epics">Epics</Link>, and{' '}
-        <Link to="/tickets">Tickets</Link>. The Kanban board will appear here in a later phase.
+        Open the <Link to="/board">Board</Link>, or manage <Link to="/teams">Teams</Link>,{' '}
+        <Link to="/epics">Epics</Link>, and <Link to="/tickets">Tickets</Link>.
       </p>
       <button style={{ ...buttonStyle, width: 'auto', padding: '0.5rem 1rem' }} onClick={logout}>
         Log out
