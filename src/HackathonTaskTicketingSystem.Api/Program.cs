@@ -1,5 +1,9 @@
 using HackathonTaskTicketingSystem.Common.ErrorHandling;
+using HackathonTaskTicketingSystem.Features.Auth;
+using HackathonTaskTicketingSystem.Infrastructure;
 using HackathonTaskTicketingSystem.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace HackathonTaskTicketingSystem;
@@ -18,12 +22,41 @@ public class Program
         builder.Services.AddProblemDetails();
         builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
-        // Persistence. Connection string comes from configuration (env var
-        // ConnectionStrings__Default in Docker Compose).
-        var connectionString = builder.Configuration.GetConnectionString("Default");
-        builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
-
+        builder.Services.AddInfrastructure(builder.Configuration);
+        builder.Services.AddScoped<AuthService>();
         builder.Services.AddHealthChecks();
+
+        // Cookie-based authentication. Session identifiers never appear in URLs.
+        builder.Services
+            .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SameSite = SameSiteMode.Lax;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+                options.ExpireTimeSpan = TimeSpan.FromDays(7);
+                options.SlidingExpiration = true;
+
+                // Return status codes instead of HTML redirects for an API.
+                options.Events.OnRedirectToLogin = context =>
+                {
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    return Task.CompletedTask;
+                };
+                options.Events.OnRedirectToAccessDenied = context =>
+                {
+                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                    return Task.CompletedTask;
+                };
+            });
+
+        // Every endpoint requires authentication unless it opts out with [AllowAnonymous].
+        builder.Services.AddAuthorization(options =>
+        {
+            options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build();
+        });
 
         var app = builder.Build();
 
@@ -33,13 +66,14 @@ public class Program
 
         if (app.Environment.IsDevelopment())
         {
-            app.MapOpenApi();
+            app.MapOpenApi().AllowAnonymous();
         }
 
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.MapControllers();
-        app.MapHealthChecks("/health"); // Public readiness/liveness endpoint.
+        app.MapHealthChecks("/health").AllowAnonymous(); // Public readiness/liveness endpoint.
 
         await ApplyMigrationsAsync(app);
 

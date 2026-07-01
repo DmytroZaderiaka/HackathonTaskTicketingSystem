@@ -127,7 +127,8 @@ frontend/{index.html, vite.config.ts, Dockerfile, nginx.conf, package.json}
 | # | Фаза | Содержание | Итог |
 |---|---|---|---|
 | 0 | **Каркас** | solution, слайс-структура, docker-compose (api+db+front-stub+mailpit), `.env.example`, ProblemDetails, EF Core + 1-я миграция, health-endpoint, README-скелет | `docker compose up --build` поднимает пустой стек |
-| 1 | **Auth** | signup, Argon2id, email-верификация (MailPit), login/logout, cookie-сессия, resend, auth-guard | регистрация → письмо → верификация → вход |
+| 1a | **Auth (backend)** | signup, Argon2id, email-верификация (MailPit), login/logout, cookie-сессия, resend, `/me` | API auth-флоу работает (проверка через OpenAPI/MailPit) |
+| 1b | **Auth (frontend) + тесты** | экраны signup/login/verify/resend + auth-guard; тест-проект + backend business-flow тест (signup→verify→login) | регистрация → письмо → верификация → вход через UI |
 | 2 | **Teams** | CRUD + 409, экран управления | команды CRUD с валидацией |
 | 3 | **Epics** | CRUD + привязка к team + 409, экран | эпики CRUD, персистятся |
 | 4 | **Tickets** | CRUD, enum-валидация, epic-same-team, modified_at-семантика, детальный экран | тикеты CRUD |
@@ -198,3 +199,19 @@ main
 - Снят `UseHttpsRedirection` — TLS терминируется на nginx; API внутри compose работает по HTTP.
 - Порты: frontend `8080`, API `5083`, MailPit UI `8025`.
 - `dotnet build` (solution) и `npm run build` (frontend) проходят чисто (0 warnings). `docker compose up --build` проверен разработчиком на машине с Docker Desktop — стек поднимается, фронтенд видит API как reachable. (В агентском окружении Docker недоступен, поэтому проверка — на стороне разработчика.)
+
+### Фаза 1a — Auth (backend) ✅ (ветка `feat/auth`)
+
+Сделано:
+- Сущности `User`, `EmailVerificationToken` + конфигурации; уникальный индекс по нормализованному `Email` (trim+lower → case-insensitive), уникальный индекс по `TokenHash`, FK с cascade. Миграция `AddUsersAndVerificationTokens`.
+- Абстракции `IClock`/`IPasswordHasher`/`IEmailSender`/`ICurrentUser` + реализации: `SystemClock`, `Argon2idPasswordHasher` (Konscious), `SmtpEmailSender` (MailKit), `CurrentUser` (из cookie-принципала).
+- `AuthService` + `AuthController`: `POST /auth/signup`, `GET /auth/verify-email`, `POST /auth/resend`, `POST /auth/login`, `POST /auth/logout`, `GET /auth/me`.
+- Cookie-аутентификация (HttpOnly, SameSite=Lax, 401/403 вместо HTML-редиректов) + глобальная fallback-политика «require authenticated»; публичные эндпоинты помечены `[AllowAnonymous]`, `/health` и `/openapi` — тоже.
+- Токены: сырой 32-байтный (base64url) в ссылке письма, в БД только SHA-256 хэш; TTL 24ч, single-use; выдача нового инвалидирует прежние. `resend` не раскрывает существование аккаунта.
+- `.http` дополнен примерами auth-флоу; `appsettings.json` — секции `App`/`SMTP`.
+
+Заметки:
+- Пакеты: `Konscious.Security.Cryptography.Argon2` 1.3.1, `MailKit` 4.17.0.
+- Верификационная ссылка (пока нет фронта) ведёт на backend `GET /auth/verify-email`; в Фазе 1b перенаправится через фронт.
+- Тест-проект и business-flow тест перенесены в Фазу 1b (по решению разработчика).
+- `dotnet build` (solution) — 0 warnings. Требуется проверка `docker compose up --build` + ручной прогон auth-флоу через MailPit на стороне разработчика.

@@ -1,3 +1,36 @@
 @HackathonTaskTicketingSystem_HostAddress = http://localhost:5083
 
-###
+### Sign up (then open MailPit at http://localhost:8025 to get the verification link)
+POST {{HackathonTaskTicketingSystem_HostAddress}}/auth/signup
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+
+### Resend verification email
+POST {{HackathonTaskTicketingSystem_HostAddress}}/auth/resend
+Content-Type: application/json
+
+{
+  "email": "user@example.com"
+}
+
+### Verify email (paste the token from the MailPit link)
+GET {{HackathonTaskTicketingSystem_HostAddress}}/auth/verify-email?token=PASTE_TOKEN_HERE
+
+### Log in (sets the auth cookie)
+POST {{HackathonTaskTicketingSystem_HostAddress}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+
+### Current user (requires the auth cookie from login)
+GET {{HackathonTaskTicketingSystem_HostAddress}}/auth/me
+
+### Log out
+POST {{HackathonTaskTicketingSystem_HostAddress}}/auth/logout
