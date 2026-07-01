@@ -242,3 +242,14 @@ main
 - **Delete-guard (409 при наличии epics/tickets) ещё не активен** — связанных сущностей нет; помечено `TODO` в `TeamService.DeleteAsync`, включим в Фазах 3/4.
 - Тесты Teams — в Фазе 2b (по правилу «тесты после полной реализации фазы»). При добавлении тестов не забыть подключить `AuditableEntitySaveChangesInterceptor` в тестовую SQLite-фабрику.
 - `dotnet build` — 0 warnings; существующие 3 auth-теста зелёные. Требуется проверка `docker compose up --build` + ручной прогон Teams API на стороне разработчика.
+
+### Фаза 2b — Teams (frontend) + тесты ✅ (ветка `feat/teams-ui`)
+
+Сделано:
+- Frontend: `api/teams.ts` (+ `put`/`del` в `api/client.ts`); экран `TeamsPage` (список, создание, inline-переименование, удаление с inline-подтверждением; loading/empty/error; текст ошибки при дубликате). Роут `/teams` под `RequireAuth` + ссылка с `HomePage`.
+- Тесты: фабрика обобщена `AuthTestFactory` → **`ApiTestFactory`** (+ `AuditableEntitySaveChangesInterceptor` в SQLite-конфиг, + хелпер `CreateAuthenticatedClientAsync`). Добавлены `TeamsApiTests`: create→201, дубликат (иной регистр)→409, rename→200, delete→204 затем 404, без auth→401.
+
+Заметки:
+- `dotnet test` — **8/8 pass** (3 auth + 5 teams), 0 warnings; `npm run build` — чисто. Требуется финальная проверка Teams через UI + `docker compose up --build` на стороне разработчика.
+- UI-полировка (единые кнопки/стиль) — по-прежнему отложена на Фазу 7.
+- **Фикс по фидбеку:** гонка двойной отправки формы (создание/переименование) могла создать команду и одновременно показать 409 от второго запроса. Добавлена синхронная защита через `ref` (не полагаясь на асинхронный `disabled`). Дублей-строк в БД быть не может — уникальный индекс по `NormalizedName`.

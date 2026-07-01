@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
 import { buttonStyle } from '../../components/AuthLayout';
 
@@ -13,7 +14,10 @@ export function HomePage() {
       <p>
         Signed in as <strong>{user?.email}</strong>.
       </p>
-      <p>The Kanban board and management screens will appear here in later phases.</p>
+      <p>
+        Manage <Link to="/teams">Teams</Link>. The Kanban board and other screens will appear here in
+        later phases.
+      </p>
       <button style={{ ...buttonStyle, width: 'auto', padding: '0.5rem 1rem' }} onClick={logout}>
         Log out
       </button>

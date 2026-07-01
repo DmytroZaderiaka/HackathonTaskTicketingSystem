@@ -1,5 +1,7 @@
+using System.Net.Http.Json;
 using HackathonTaskTicketingSystem.Common.Abstractions;
 using HackathonTaskTicketingSystem.Infrastructure.Persistence;
+using HackathonTaskTicketingSystem.Infrastructure.Persistence.Interceptors;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -13,11 +15,10 @@ using Microsoft.Extensions.Hosting;
 namespace HackathonTaskTicketingSystem.Tests;
 
 /// <summary>
-/// Spins up the real application for integration tests, but backed by a shared
-/// in-memory SQLite database and a capturing email sender, so no Docker/Postgres/SMTP
-/// is required to run the suite.
+/// Spins up the real application for integration tests, backed by a shared in-memory
+/// SQLite database and a capturing email sender, so no Docker/Postgres/SMTP is required.
 /// </summary>
-public sealed class AuthTestFactory : WebApplicationFactory<Program>
+public sealed class ApiTestFactory : WebApplicationFactory<Program>
 {
     private readonly SqliteConnection _connection = new("DataSource=:memory:");
 
@@ -54,9 +55,13 @@ public sealed class AuthTestFactory : WebApplicationFactory<Program>
                 services.Remove(descriptor);
             }
 
-            // Replace with a shared in-memory SQLite context.
+            // Replace with a shared in-memory SQLite context, keeping the auditing
+            // interceptor so IAuditableEntity timestamps are still populated.
             _connection.Open();
-            services.AddDbContext<AppDbContext>(options => options.UseSqlite(_connection));
+            services.AddDbContext<AppDbContext>((serviceProvider, options) =>
+                options
+                    .UseSqlite(_connection)
+                    .AddInterceptors(serviceProvider.GetRequiredService<AuditableEntitySaveChangesInterceptor>()));
 
             // Capture outgoing email instead of sending it.
             services.RemoveAll<IEmailSender>();
@@ -73,6 +78,28 @@ public sealed class AuthTestFactory : WebApplicationFactory<Program>
         dbContext.Database.EnsureCreated();
 
         return host;
+    }
+
+    /// <summary>
+    /// Creates a client whose cookie belongs to a freshly registered, verified, logged-in
+    /// user — the starting point for testing endpoints that require authentication.
+    /// </summary>
+    public async Task<HttpClient> CreateAuthenticatedClientAsync(
+        string email = "member@example.com", string password = "password123")
+    {
+        var client = CreateClient();
+
+        var signup = await client.PostAsJsonAsync("/auth/signup", new { email, password });
+        signup.EnsureSuccessStatusCode();
+
+        var token = Email.ExtractLatestToken();
+        var verify = await client.GetAsync($"/auth/verify-email?token={Uri.EscapeDataString(token)}");
+        verify.EnsureSuccessStatusCode();
+
+        var login = await client.PostAsJsonAsync("/auth/login", new { email, password });
+        login.EnsureSuccessStatusCode();
+
+        return client;
     }
 
     protected override void Dispose(bool disposing)
