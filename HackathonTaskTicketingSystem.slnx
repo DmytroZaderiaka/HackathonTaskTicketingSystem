@@ -1,3 +1,5 @@
 <Solution>
-  <Project Path="HackathonTaskTicketingSystem/HackathonTaskTicketingSystem.csproj" />
+  <Folder Name="/src/">
+    <Project Path="src/HackathonTaskTicketingSystem.Api/HackathonTaskTicketingSystem.Api.csproj" />
+  </Folder>
 </Solution>

@@ -13,9 +13,22 @@ Current state: the backend is a bare ASP.NET Core scaffold (the `WeatherForecast
 - **Communicate with the developer in Russian** — explanations, architecture discussion, and chat responses are in Russian.
 - **All code artifacts are in English**: identifiers (variables, methods, classes), comments, and XML documentation.
 - **Explain the implementation plan in Russian before modifying code.**
+- **Do not agree automatically.** If the developer proposes a weak or risky solution, say so and explain why; if a better option exists, propose it. Push back with reasoning rather than deferring by default.
 - Keep commits small and focused. **Avoid unnecessary refactoring** — change only what the task needs.
 - **Inspect the existing solution/project structure before adding new files** — place them consistently and avoid duplication.
 - After significant changes, **verify that `docker compose up --build` still works**, or explain why it could not be verified (e.g. Docker unavailable in the environment).
+
+### Definition of done for a phase
+
+A phase (see `IMPLEMENTATION_PLAN.md`) is complete only when **all** of these hold:
+
+- The project builds successfully.
+- Existing tests pass.
+- New tests are added where the phase requires them.
+- `docker compose up --build` succeeds.
+- No new compiler warnings are introduced.
+- `IMPLEMENTATION_PLAN.md` is updated to reflect what was done.
+- Git status is clean (everything committed).
 
 ## Stack & topology (decided)
 
