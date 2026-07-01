@@ -309,3 +309,12 @@ main
 
 Заметки:
 - `dotnet build` — 0 warnings; тесты 23/23 зелёные. Тесты Comments (вкл. «комментарий не двигает modified_at» и «удаление тикета удаляет комментарии») — в Фазе 5b. Требуется проверка `docker compose up --build` + ручной прогон на стороне разработчика.
+
+### Фаза 5b — Comments (frontend) + тесты ✅ (ветка `feat/comments-ui`)
+
+Сделано:
+- Frontend: `api/comments.ts`; компонент `TicketComments` встроен в детали тикета — список oldest-first (автор + время + текст) + форма добавления; loading/empty/error, защита от двойной отправки.
+- Тесты `CommentsApiTests` (6): добавить → 201; oldest-first (сорт. по `createdAt`); пустой body → 400; чужой ticket → 404; **комментарий не меняет `modified_at` тикета**; **удаление тикета с комментарием → 204** (cascade подтверждён).
+
+Заметки:
+- `dotnet test` — **29/29 pass** (3 auth + 5 teams + 6 epics + 9 tickets + 6 comments), 0 warnings; `npm run build` — чисто. Требуется финальная проверка комментариев через UI + `docker compose up --build` на стороне разработчика.
