@@ -19,6 +19,8 @@ public sealed record UpdateTicketRequest(
     [Required, MaxLength(500)] string Title,
     [Required] string Body);
 
+public sealed record ChangeTicketStateRequest([Required] TicketState State);
+
 public sealed record CreatedByDto(Guid Id, string Email);
 
 public sealed record TicketResponse(

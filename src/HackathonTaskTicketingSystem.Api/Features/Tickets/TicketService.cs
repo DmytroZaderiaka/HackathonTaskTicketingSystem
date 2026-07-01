@@ -142,6 +142,22 @@ public sealed class TicketService
         return TicketWriteOutcome.Success;
     }
 
+    public async Task<bool> ChangeStateAsync(Guid id, TicketState state, CancellationToken cancellationToken)
+    {
+        var ticket = await _dbContext.Tickets.FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
+        if (ticket is null)
+        {
+            return false;
+        }
+
+        // Any state -> any state is allowed. If unchanged, EF tracks no change and
+        // ModifiedAt is not advanced (dropping a card back in its own column).
+        ticket.State = state;
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return true;
+    }
+
     public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken)
     {
         var ticket = await _dbContext.Tickets.FirstOrDefaultAsync(t => t.Id == id, cancellationToken);

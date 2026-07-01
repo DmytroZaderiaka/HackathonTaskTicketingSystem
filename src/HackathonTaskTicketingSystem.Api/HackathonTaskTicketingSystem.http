@@ -111,6 +111,14 @@ Content-Type: application/json
   "body": "Updated description."
 }
 
+### Change only a ticket's state (used by board drag-and-drop)
+PATCH {{HackathonTaskTicketingSystem_HostAddress}}/tickets/00000000-0000-0000-0000-000000000000/state
+Content-Type: application/json
+
+{
+  "state": "in_progress"
+}
+
 ### Delete a ticket (replace the id)
 DELETE {{HackathonTaskTicketingSystem_HostAddress}}/tickets/00000000-0000-0000-0000-000000000000
 

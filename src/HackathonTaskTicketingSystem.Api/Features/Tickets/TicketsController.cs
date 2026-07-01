@@ -56,6 +56,20 @@ public sealed class TicketsController : ControllerBase
         return Ok(updated);
     }
 
+    [HttpPatch("{id:guid}/state")]
+    public async Task<IActionResult> ChangeState(
+        Guid id, ChangeTicketStateRequest request, CancellationToken cancellationToken)
+    {
+        var changed = await _ticketService.ChangeStateAsync(id, request.State, cancellationToken);
+        if (!changed)
+        {
+            return NotFoundProblem();
+        }
+
+        var updated = await _ticketService.GetAsync(id, cancellationToken);
+        return Ok(updated);
+    }
+
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
