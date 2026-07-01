@@ -327,3 +327,16 @@ main
 
 Заметки:
 - `dotnet build` — 0 warnings. Тесты state-эндпоинта + доска — в Фазе 6b. Доска грузит `GET /tickets?teamId=` и группирует/фильтрует на клиенте.
+
+### Фаза 6b — Kanban board (frontend) + тесты ✅ (ветка `feat/board-ui`)
+
+Сделано:
+- Рефактор: `TicketDetails` вынесен в `features/tickets/TicketDetails.tsx` (переиспользуется списком тикетов и доской).
+- `@dnd-kit/core`; `api/client` получил `patch`, `ticketsApi.changeState`.
+- Экран `BoardPage` (роут `/board`, ссылка с `HomePage`): селектор команды → 5 колонок по состояниям; карточки (title + type + epic); **drag-and-drop между любыми колонками** с оптимистичным перемещением, `PATCH /state`, **откатом и ошибкой при сбое**; сортировка в колонке по `modified_at desc`; фильтры type/epic + поиск по title (**AND**, client-side); создание (`TicketForm` в модалке) и открытие (`TicketDetails` в модалке, с Edit/Delete/комментариями).
+- Тесты в `TicketsApiTests` (+3): смена состояния → 200 + новое состояние + `modified_at` продвинулся; невалидный state → 400; чужой id → 404.
+
+Заметки:
+- Сам drag-and-drop — браузерное поведение, проверяется вручную; DoD по тестам закрыт API-тестами state-эндпоинта.
+- `dotnet test` — **32/32 pass**, 0 warnings; `npm run build` — чисто. Требуется финальная проверка доски через UI + `docker compose up --build` на стороне разработчика.
+- UI-полировка — по-прежнему Фаза 7.

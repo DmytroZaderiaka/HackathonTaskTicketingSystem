@@ -7,7 +7,8 @@ public sealed class TicketsApiTests
 {
     private sealed record TeamDto(Guid Id);
     private sealed record EpicDto(Guid Id);
-    private sealed record TicketDto(Guid Id, Guid TeamId, Guid? EpicId, string Type, string State, string Title, string Body);
+    private sealed record TicketDto(
+        Guid Id, Guid TeamId, Guid? EpicId, string Type, string State, string Title, string Body, DateTime ModifiedAt);
 
     private static async Task<Guid> CreateTeamAsync(HttpClient client, string name)
     {
@@ -150,5 +151,45 @@ public sealed class TicketsApiTests
 
         var deleteTeam = await client.DeleteAsync($"/teams/{teamId}");
         Assert.Equal(HttpStatusCode.Conflict, deleteTeam.StatusCode);
+    }
+
+    [Fact]
+    public async Task Change_state_updates_state_and_advances_modified_at()
+    {
+        await using var factory = new ApiTestFactory();
+        var client = await factory.CreateAuthenticatedClientAsync();
+        var teamId = await CreateTeamAsync(client, "Team");
+        var create = await client.PostAsJsonAsync("/tickets", NewTicket(teamId, state: "new"));
+        var ticket = await create.Content.ReadFromJsonAsync<TicketDto>();
+
+        var change = await client.PatchAsJsonAsync($"/tickets/{ticket!.Id}/state", new { state = "in_progress" });
+        Assert.Equal(HttpStatusCode.OK, change.StatusCode);
+
+        var updated = await change.Content.ReadFromJsonAsync<TicketDto>();
+        Assert.Equal("in_progress", updated!.State);
+        Assert.True(updated.ModifiedAt >= ticket.ModifiedAt);
+    }
+
+    [Fact]
+    public async Task Change_state_to_invalid_value_returns_400()
+    {
+        await using var factory = new ApiTestFactory();
+        var client = await factory.CreateAuthenticatedClientAsync();
+        var teamId = await CreateTeamAsync(client, "Team");
+        var create = await client.PostAsJsonAsync("/tickets", NewTicket(teamId));
+        var ticket = await create.Content.ReadFromJsonAsync<TicketDto>();
+
+        var change = await client.PatchAsJsonAsync($"/tickets/{ticket!.Id}/state", new { state = "flying" });
+        Assert.Equal(HttpStatusCode.BadRequest, change.StatusCode);
+    }
+
+    [Fact]
+    public async Task Change_state_of_unknown_ticket_returns_404()
+    {
+        await using var factory = new ApiTestFactory();
+        var client = await factory.CreateAuthenticatedClientAsync();
+
+        var change = await client.PatchAsJsonAsync($"/tickets/{Guid.NewGuid()}/state", new { state = "done" });
+        Assert.Equal(HttpStatusCode.NotFound, change.StatusCode);
     }
 }
